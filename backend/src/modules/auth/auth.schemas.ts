@@ -1,10 +1,8 @@
 import { z } from "zod";
+import { emailField } from "../../utils/schemas";
 
 export const loginSchema = z.object({
-  email: z
-    .email()
-    .max(254)
-    .transform((v) => v.trim().toLowerCase()),
+  email: emailField,
   password: z.string().min(1, "Password is required").max(128),
 });
 export type LoginInput = z.infer<typeof loginSchema>;

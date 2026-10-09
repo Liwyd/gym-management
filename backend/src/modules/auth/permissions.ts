@@ -43,7 +43,7 @@ export const CAPABILITIES: Record<Capability, Role[]> = {
   "members:read": DESK_PLUS_MEMBER,
   "members:write": STAFF,
   "plans:list": STAFF,
-  "plans:write": MANAGEMENT,
+  "plans:write": [Role.ADMIN],
   "memberships:list": STAFF,
   "memberships:read": DESK_PLUS_MEMBER,
   "memberships:write": [...DESK_PLUS_MEMBER],

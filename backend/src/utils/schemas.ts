@@ -10,9 +10,11 @@ export const passwordField = z
   .regex(/[0-9]/, "Password must contain a number");
 
 export const emailField = z
-  .email()
+  .string()
+  .trim()
   .max(254)
-  .transform((v) => v.trim().toLowerCase());
+  .pipe(z.email())
+  .transform((v) => v.toLowerCase());
 
 /** Query-string boolean: ?flag=true / ?flag=false (z.coerce.boolean is unsafe). */
 export const boolQuery = z
