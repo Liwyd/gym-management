@@ -82,7 +82,7 @@ Architecture structured · work actually works · consistent with earlier stages
 ## Project Execution State
 
 ### Current Stage
-Stage 3 — COMPLETE. Next: Stage 4 (user stories).
+Stage 4 — COMPLETE. Next: Stage 5 (requirements).
 
 ### Stage 0 — Bootstrap — COMPLETE
 - [x] Audit repository (single commit containing only plan.md; no code)
@@ -116,10 +116,10 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 - [x] Supporting sequence and activity diagrams; consistent with DB and planned implementation (Stage 1 diagrams referenced; login / enrollment-cancel / session-cancel activities added)
 - [x] Commit, push, quality gate, mark COMPLETE
 
-## Stage 4 — User Stories
-- [ ] Branch `stage/04-user-stories`
-- [ ] Stories in "As a / I want / so that" with acceptance criteria, priority, related use case, status; grouped by epic
-- [ ] Commit, push, quality gate, mark COMPLETE
+## Stage 4 — User Stories — COMPLETE
+- [x] Branch `stage/04-user-stories`
+- [x] Stories in "As a / I want / so that" with acceptance criteria, priority, related use case, status; grouped by epic — 44 stories (US-01…US-44) in `docs/user-stories/`, all 20 use cases covered
+- [x] Commit, push, quality gate, mark COMPLETE
 
 ## Stage 5 — Requirements
 - [ ] Branch `stage/05-requirements`
@@ -187,4 +187,4 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 
 ## Next Exact Action
 
-Start Stage 4: create branch `stage/04-user-stories`, produce `docs/user-stories/` (stories with acceptance criteria, priority, related use case, status, grouped by epic) covering all 20 use cases.
+Start Stage 5: create branch `stage/05-requirements`, produce `docs/requirements/` (functional + non-functional requirements mapped to the 44 stories and to later implementation).
