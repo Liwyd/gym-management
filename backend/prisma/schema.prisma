@@ -1,0 +1,299 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  TRAINER
+  RECEPTIONIST
+  MEMBER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum MemberStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum TrainerStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum MembershipStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum SessionStatus {
+  SCHEDULED
+  CANCELLED
+  COMPLETED
+}
+
+enum EnrollmentStatus {
+  ENROLLED
+  CANCELLED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  BANK_TRANSFER
+}
+
+enum PaymentType {
+  MEMBERSHIP_PURCHASE
+  CLASS_FEE
+  OTHER
+}
+
+enum FacilityType {
+  GYM_FLOOR
+  STUDIO
+  POOL
+  COURT
+}
+
+enum FacilityStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum NotificationType {
+  INFO
+  WARNING
+  REMINDER
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  phone        String?
+  role         Role
+  status       UserStatus @default(ACTIVE)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  member            Member?
+  trainer           Trainer?
+  notifications     Notification[]
+  activityLogs      ActivityLog[]  @relation("ActivityActor")
+  paymentsProcessed Payment[]      @relation("PaymentProcessor")
+  attendanceMarks   Attendance[]   @relation("AttendanceRecorder")
+}
+
+model Member {
+  id                String       @id @default(uuid())
+  userId            String       @unique
+  memberCode        String       @unique
+  dateOfBirth       DateTime?    @db.Date
+  gender            String?
+  address           String?
+  emergencyContact  String?
+  notes             String?
+  status            MemberStatus @default(ACTIVE)
+  joinedAt          DateTime     @default(now()) @db.Date
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  memberships  Membership[]
+  enrollments  Enrollment[]
+  payments     Payment[]
+}
+
+model Trainer {
+  id            String        @id @default(uuid())
+  userId        String        @unique
+  specialization String?
+  bio           String?
+  status        TrainerStatus @default(ACTIVE)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessions ClassSession[]
+}
+
+model MembershipPlan {
+  id           String   @id @default(uuid())
+  name         String   @unique
+  description  String?
+  durationDays Int
+  price        Decimal  @db.Decimal(10, 2)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  memberships Membership[]
+}
+
+model Membership {
+  id        String           @id @default(uuid())
+  memberId  String
+  planId    String
+  startDate DateTime         @db.Date
+  endDate   DateTime         @db.Date
+  status    MembershipStatus @default(ACTIVE)
+  paymentId String?          @unique
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  member  Member          @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  plan    MembershipPlan  @relation(fields: [planId], references: [id])
+  payment Payment?        @relation(fields: [paymentId], references: [id])
+
+  @@index([memberId, status])
+}
+
+model FitnessClass {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  category    String
+  capacity    Int      @default(12)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sessions ClassSession[]
+}
+
+model ClassSession {
+  id           String        @id @default(uuid())
+  classId      String
+  trainerId    String
+  facilityId   String
+  startsAt     DateTime
+  endsAt       DateTime
+  status       SessionStatus @default(SCHEDULED)
+  cancelReason String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  class       FitnessClass @relation(fields: [classId], references: [id])
+  trainer     Trainer      @relation(fields: [trainerId], references: [id])
+  facility    Facility     @relation(fields: [facilityId], references: [id])
+  enrollments Enrollment[]
+
+  @@index([startsAt])
+  @@index([trainerId, startsAt])
+  @@index([facilityId, startsAt])
+  @@index([classId])
+}
+
+model Enrollment {
+  id         String           @id @default(uuid())
+  memberId   String
+  sessionId  String
+  status     EnrollmentStatus @default(ENROLLED)
+  enrolledAt DateTime         @default(now())
+
+  member     Member      @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  session    ClassSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  attendance Attendance?
+
+  @@unique([memberId, sessionId])
+  @@index([sessionId, status])
+}
+
+model Attendance {
+  id           String           @id @default(uuid())
+  enrollmentId String           @unique
+  status       AttendanceStatus
+  recordedById String?
+  recordedAt   DateTime         @default(now())
+
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  recordedBy User?      @relation("AttendanceRecorder", fields: [recordedById], references: [id], onDelete: SetNull)
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  memberId      String
+  amount        Decimal       @db.Decimal(10, 2)
+  type          PaymentType
+  method        PaymentMethod
+  status        PaymentStatus
+  description   String?
+  processedById String?
+  paidAt        DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+
+  member      Member       @relation(fields: [memberId], references: [id])
+  membership  Membership?
+  processedBy User?        @relation("PaymentProcessor", fields: [processedById], references: [id], onDelete: SetNull)
+
+  @@index([memberId, paidAt])
+  @@index([paidAt])
+}
+
+model Facility {
+  id          String        @id @default(uuid())
+  name        String        @unique
+  type        FacilityType
+  capacity    Int
+  status      FacilityStatus @default(ACTIVE)
+  description String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  sessions ClassSession[]
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType @default(INFO)
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+}
+
+model ActivityLog {
+  id         String   @id @default(uuid())
+  actorId    String?
+  action     String
+  entityType String
+  entityId   String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  actor User? @relation("ActivityActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+}
