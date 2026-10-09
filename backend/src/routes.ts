@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { prisma } from "./lib/prisma";
 import { fail, ok } from "./lib/respond";
+import { requireAuth } from "./middleware/auth";
 import { authRouter } from "./modules/auth/auth.routes";
 import { plansRouter } from "./modules/plans/plans.routes";
 import { membersRouter } from "./modules/members/members.routes";
@@ -28,6 +29,9 @@ apiRouter.get("/health", async (_req, res) => {
 });
 
 apiRouter.use(authRouter);
+// Public: /health, auth login/register/logout (handled above).
+// Everything else requires a valid session; authorize() then applies RBAC.
+apiRouter.use(requireAuth);
 apiRouter.use(plansRouter);
 apiRouter.use(membersRouter);
 apiRouter.use(membershipsRouter);
