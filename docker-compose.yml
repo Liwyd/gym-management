@@ -18,6 +18,7 @@ services:
       start_period: 10s
 
   backend:
+    image: ${DOCKERHUB_USER:-liwyd}/pulsefit-backend:${IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: docker/Dockerfile.backend
@@ -44,6 +45,7 @@ services:
       start_period: 30s
 
   frontend:
+    image: ${DOCKERHUB_USER:-liwyd}/pulsefit-frontend:${IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: docker/Dockerfile.frontend
