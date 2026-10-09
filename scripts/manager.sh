@@ -59,12 +59,15 @@ cmd_install() {
 cmd_update() {
   if [ -d "$APP_DIR/.git" ]; then
     ok "Pulling latest code…"
-    git -C "$APP_DIR" pull --ff-only || warn "git pull failed; rebuilding with local files"
-  else
-    warn "Not a git checkout — rebuilding with local files"
+    git -C "$APP_DIR" pull --ff-only || warn "git pull failed; continuing with local files"
   fi
-  ok "Rebuilding images…"
-  compose build
+  ok "Pulling latest images…"
+  if compose pull backend frontend; then
+    ok "Images updated"
+  else
+    warn "Pull failed — rebuilding images locally…"
+    compose build
+  fi
   ok "Restarting…"
   compose up -d
   ok "Updated"

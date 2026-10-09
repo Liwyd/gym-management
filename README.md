@@ -10,6 +10,13 @@ Prisma 6 · PostgreSQL 16 · JWT (httpOnly cookie) · Docker Compose
 
 ```bash
 cp .env.example .env   # optional — sane defaults are built in
+docker compose pull    # download prebuilt images from Docker Hub
+docker compose up -d
+```
+
+Building from source instead (slower, first time only):
+
+```bash
 docker compose up -d --build
 ```
 

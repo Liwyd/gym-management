@@ -178,9 +178,15 @@ EOF
 }
 
 start_stack() {
-  step "Building and starting containers"
-  info "First build can take several minutes…"
-  docker compose -f "$APP_DIR/docker-compose.yml" --env-file "$APP_DIR/.env" up -d --build
+  step "Starting containers"
+  info "Pulling prebuilt images from Docker Hub…"
+  if docker compose -f "$APP_DIR/docker-compose.yml" --env-file "$APP_DIR/.env" pull backend frontend 2>/dev/null; then
+    ok "Images pulled"
+    docker compose -f "$APP_DIR/docker-compose.yml" --env-file "$APP_DIR/.env" up -d
+  else
+    warn "Pull failed — building images locally instead (can take several minutes)"
+    docker compose -f "$APP_DIR/docker-compose.yml" --env-file "$APP_DIR/.env" up -d --build
+  fi
   ok "Containers started"
 }
 
