@@ -82,7 +82,7 @@ Architecture structured · work actually works · consistent with earlier stages
 ## Project Execution State
 
 ### Current Stage
-Stage 1 — COMPLETE. Next: Stage 2 (database).
+Stage 2 — COMPLETE. Next: Stage 3 (use cases).
 
 ### Stage 0 — Bootstrap — COMPLETE
 - [x] Audit repository (single commit containing only plan.md; no code)
@@ -101,12 +101,14 @@ Stage 1 — COMPLETE. Next: Stage 2 (database).
 - [x] Validate diagrams against intended functionality (`docs/analysis/validation.md`)
 - [x] Commit, push, quality gate, mark COMPLETE
 
-## Stage 2 — Database
-- [ ] Branch `stage/02-database`
-- [ ] ERD in `docs/database/` matching Stage 1
-- [ ] Prisma schema: PKs, FKs, constraints, justified indexes, timestamps, normalization
-- [ ] Migration + realistic, safe seed/demo data
-- [ ] Commit, push, quality gate, mark COMPLETE
+## Stage 2 — Database — COMPLETE
+- [x] Branch `stage/02-database`
+- [x] ERD in `docs/database/` matching Stage 1 (`erd.md` + design notes `README.md`)
+- [x] Prisma schema: PKs, FKs, constraints, justified indexes, timestamps, normalization (`backend/prisma/schema.prisma`)
+- [x] Migration (`prisma/migrations/0001_init/migration.sql`, generated via `prisma migrate diff`, DDL syntax-verified) + realistic safe seed (`backend/prisma/seed.ts`, type-checked)
+- [x] Commit, push, quality gate, mark COMPLETE
+
+Known limitation: no local Postgres/Docker in this environment — `migrate deploy` + seed execution must be verified in Stage 7/8 CI (Postgres service container). Schema validated with `prisma validate`, client generated, seed type-checked with `tsc --noEmit`.
 
 ## Stage 3 — Use Cases
 - [ ] Branch `stage/03-use-cases`
@@ -169,6 +171,8 @@ Stage 1 — COMPLETE. Next: Stage 2 (database).
 6. Offset pagination with bounded `limit` (max 100) is sufficient for project scale.
 7. Academic diagrams in Mermaid (source files committed in `docs/`).
 8. plan.md was purged from git history by rebuilding the root commit (only commit existed at the time).
+9. `bcryptjs` (pure-JS bcrypt, v3) instead of native `bcrypt` — no compiler toolchain needed in CI/Docker/PRoot.
+10. npm installs here are slow and background/orphaned processes can deadlock under libproot — always run installs in the foreground with a generous timeout, never concurrently.
 
 ## Constraints & Environment Notes
 
@@ -183,4 +187,4 @@ Stage 1 — COMPLETE. Next: Stage 2 (database).
 
 ## Next Exact Action
 
-Start Stage 2: create branch `stage/02-database`, produce `docs/database/` ERD from the Stage 1 class diagram, implement `backend/prisma/` schema (constraints + justified indexes), migration, and realistic seed data.
+Start Stage 3: create branch `stage/03-use-cases`, produce `docs/use-cases/` (use case diagram + full descriptions with actor, preconditions, main/alternative/error flows, postconditions) consistent with Stage 1–2.
