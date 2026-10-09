@@ -24,6 +24,16 @@ function dateOnly(daysFromNow: number): Date {
 }
 
 async function main() {
+  const existing = await prisma.user.count();
+  if (existing > 0) {
+    console.error("Database already contains data — refusing to seed twice.");
+    console.error(
+      "To load demo data again, reset first: docker compose down -v && docker compose up -d",
+    );
+    process.exitCode = 1;
+    return;
+  }
+
   const passwordHash = bcrypt.hashSync(DEMO_PASSWORD, 10);
 
   // --- Accounts -------------------------------------------------------------
@@ -204,6 +214,8 @@ async function main() {
       id: s.id,
       classId: classIds[s.classKey].id,
       trainerId: trainerIds[s.trainerKey],
+      // Attendance.recordedById references the trainer's User, not Trainer.
+      trainerUserId: userIds[s.trainerKey],
       facilityId: facilityIds[s.facility],
       startsAt,
       endsAt,
@@ -213,7 +225,14 @@ async function main() {
     };
   });
   await prisma.classSession.createMany({
-    data: sessions.map(({ classKey: _classKey, capacity: _capacity, ...s }) => s),
+    data: sessions.map(
+      ({
+        classKey: _classKey,
+        capacity: _capacity,
+        trainerUserId: _trainerUserId,
+        ...s
+      }) => s,
+    ),
   });
 
   // --- Enrollments + attendance --------------------------------------------
@@ -258,7 +277,7 @@ async function main() {
         id: randomUUID(),
         enrollmentId: e.id,
         status: status as "ABSENT" | "LATE" | "PRESENT",
-        recordedById: session.trainerId,
+        recordedById: session.trainerUserId,
         recordedAt: new Date(session.endsAt.getTime() + 15 * 60 * 1000),
       };
     });
