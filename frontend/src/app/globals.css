@@ -1,0 +1,179 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ------------------------------------------------------------------
+   PulseFit design tokens — source of truth: docs/prototype/design-tokens.md
+   Never write raw hex values inside components; use these variables.
+------------------------------------------------------------------- */
+:root {
+  /* brand */
+  --primary: #2563eb;
+  --primary-strong: #1d4ed8;
+  --primary-soft: #eaf1fe;
+  --primary-softer: #f4f8ff;
+  --secondary: #0f172a;
+
+  /* neutrals */
+  --background: #ffffff;
+  --background-subtle: #f6f9fe;
+  --foreground: #0b1b3f;
+  --foreground-body: #33415c;
+  --muted-foreground: #64748b;
+  --border: #e3eaf6;
+  --border-strong: #cbd7ec;
+  --card: #ffffff;
+  --card-foreground: #0b1b3f;
+  --popover: #ffffff;
+  --popover-foreground: #0b1b3f;
+  --muted: #f6f9fe;
+  --accent: #eaf1fe;
+  --accent-foreground: #1d4ed8;
+  --input: #cbd7ec;
+  --ring: #2563eb;
+
+  /* semantic (status only) */
+  --success: #16a34a;
+  --success-fg: #166534;
+  --success-bg: #eaf9f0;
+  --warning: #d97706;
+  --warning-fg: #92400e;
+  --warning-bg: #fef6e7;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --destructive-fg: #991b1b;
+  --destructive-bg: #fdecec;
+  --info: #0284c7;
+  --info-fg: #075985;
+  --info-bg: #e6f6fd;
+
+  /* charts */
+  --chart-1: #2563eb;
+  --chart-2: #38bdf8;
+  --chart-3: #14b8a6;
+  --chart-4: #f59e0b;
+  --chart-5: #8b5cf6;
+
+  /* sidebar */
+  --sidebar: #f6f9fe;
+  --sidebar-foreground: #0b1b3f;
+  --sidebar-primary: #2563eb;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eaf1fe;
+  --sidebar-accent-foreground: #1d4ed8;
+  --sidebar-border: #e3eaf6;
+  --sidebar-ring: #2563eb;
+
+  /* elevation (restrained neumorphism) */
+  --elev-soft: 0 1px 2px rgba(11, 27, 63, 0.05), 0 8px 24px rgba(11, 27, 63, 0.06);
+  --elev-pop: 0 2px 6px rgba(11, 27, 63, 0.08), 0 18px 40px rgba(11, 27, 63, 0.12);
+  --elev-button: 0 1px 2px rgba(11, 27, 63, 0.1), 0 4px 10px rgba(37, 99, 235, 0.18);
+  --elev-inner: inset 0 1px 2px rgba(11, 27, 63, 0.06);
+
+  /* geometry */
+  --radius: 0.875rem;
+
+  /* typography (self-hosted via @fontsource-variable/inter — no build-time font fetch) */
+  --font-inter: "Inter Variable", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif);
+  --font-heading: var(--font-sans);
+
+  /* shadcn slots */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground, #ffffff);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground, #ffffff);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* extended palette */
+  --color-primary-strong: var(--primary-strong);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-softer: var(--primary-softer);
+  --color-background-subtle: var(--background-subtle);
+  --color-foreground-body: var(--foreground-body);
+  --color-border-strong: var(--border-strong);
+  --color-success: var(--success);
+  --color-success-fg: var(--success-fg);
+  --color-success-bg: var(--success-bg);
+  --color-warning: var(--warning);
+  --color-warning-fg: var(--warning-fg);
+  --color-warning-bg: var(--warning-bg);
+  --color-info: var(--info);
+  --color-info-fg: var(--info-fg);
+  --color-info-bg: var(--info-bg);
+  --color-destructive-fg: var(--destructive-fg);
+  --color-destructive-bg: var(--destructive-bg);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* sidebar */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* elevation utilities: shadow-soft / shadow-pop / shadow-button / shadow-inner-soft */
+  --shadow-soft: var(--elev-soft);
+  --shadow-pop: var(--elev-pop);
+  --shadow-button: var(--elev-button);
+  --shadow-inner-soft: var(--elev-inner);
+
+  /* exact radii from design-tokens.md */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-3xl: 30px;
+  --radius-4xl: 36px;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans scroll-smooth;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    color: var(--foreground-body);
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--foreground);
+  }
+  ::selection {
+    background: var(--primary-soft);
+    color: var(--primary-strong);
+  }
+}

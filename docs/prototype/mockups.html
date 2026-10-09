@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PulseFit — Design System Mockup</title>
+<style>
+:root{
+  --primary:#2563EB; --primary-strong:#1D4ED8; --primary-soft:#EAF1FE; --primary-softer:#F4F8FF;
+  --secondary:#0F172A;
+  --background:#FFFFFF; --background-subtle:#F6F9FE;
+  --foreground:#0B1B3F; --foreground-body:#33415C; --muted-foreground:#64748B;
+  --border:#E3EAF6; --border-strong:#CBD7EC;
+  --success:#16A34A; --success-bg:#EAF9F0; --warning:#D97706; --warning-bg:#FEF6E7;
+  --destructive:#DC2626; --destructive-bg:#FDECEC; --info:#0284C7; --info-bg:#E6F6FD;
+  --shadow-soft:0 1px 2px rgba(11,27,63,.05),0 8px 24px rgba(11,27,63,.06);
+  --shadow-pop:0 2px 6px rgba(11,27,63,.08),0 18px 40px rgba(11,27,63,.12);
+  --shadow-button:0 1px 2px rgba(11,27,63,.10),0 4px 10px rgba(37,99,235,.18);
+  --inner-soft:inset 0 1px 2px rgba(11,27,63,.06);
+  --radius-sm:6px; --radius-md:10px; --radius-lg:14px; --radius-full:9999px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--background-subtle);color:var(--foreground-body);font-size:15px;line-height:24px;-webkit-font-smoothing:antialiased}
+h1{font-size:30px;line-height:38px;font-weight:600;color:var(--foreground)}
+h2{font-size:17px;line-height:24px;font-weight:600;color:var(--foreground)}
+.label{font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted-foreground)}
+.cap{font-size:13px;line-height:18px;color:var(--muted-foreground)}
+.section{max-width:1280px;margin:0 auto;padding:48px 24px}
+.section > .label{margin-bottom:8px}
+.section > h1{margin-bottom:4px}
+.section > .cap{margin-bottom:24px}
+.card{background:var(--background);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-soft);padding:24px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:none;border-radius:var(--radius-md);font:500 14px/20px inherit;padding:10px 18px;cursor:pointer;transition:background .15s,box-shadow .15s,transform .05s}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 2px #fff,0 0 0 4px var(--primary)}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:var(--shadow-button)}
+.btn-primary:hover{background:var(--primary-strong)}
+.btn-outline{background:#fff;color:var(--foreground);border:1px solid var(--border-strong)}
+.btn-outline:hover{background:var(--primary-softer)}
+.btn-ghost{background:transparent;color:var(--foreground-body)}
+.btn-ghost:hover{background:var(--primary-soft);color:var(--primary-strong)}
+.btn-sm{padding:7px 12px;font-size:13px}
+.btn[disabled]{opacity:.55;cursor:not-allowed;box-shadow:none}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:var(--radius-full);font:500 12px/18px inherit;border:1px solid transparent}
+.b-success{background:var(--success-bg);color:#166534;border-color:#C9EED9}
+.b-warning{background:var(--warning-bg);color:#92400E;border-color:#F7E3BC}
+.b-destructive{background:var(--destructive-bg);color:#991B1B;border-color:#F7CFCF}
+.b-info{background:var(--info-bg);color:#075985;border-color:#C7E9F6}
+.b-neutral{background:var(--background-subtle);color:var(--foreground-body);border-color:var(--border)}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+input,select{font:400 15px/24px inherit;color:var(--foreground);background:#fff;border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:9px 12px;width:100%}
+input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:500;color:var(--foreground)}
+.stat{background:#fff;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-soft);padding:20px;display:flex;flex-direction:column;gap:8px}
+.stat .chip{width:36px;height:36px;border-radius:var(--radius-md);background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;font-size:16px;box-shadow:var(--inner-soft)}
+.stat .num{font-size:32px;line-height:40px;font-weight:600;color:var(--foreground);font-variant-numeric:tabular-nums}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.grid23{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+table{width:100%;border-collapse:collapse}
+th{font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted-foreground);text-align:left;padding:10px 14px;background:var(--background-subtle);border-bottom:1px solid var(--border)}
+td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:14px;color:var(--foreground-body)}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--primary-softer)}
+.num-cell{text-align:right;font-variant-numeric:tabular-nums;color:var(--foreground)}
+.avatar{width:34px;height:34px;border-radius:var(--radius-full);background:var(--primary-soft);color:var(--primary-strong);display:inline-grid;place-items:center;font:600 13px/1 inherit;flex:none}
+.who{display:flex;align-items:center;gap:10px}
+.who b{font-weight:500;color:var(--foreground);display:block;font-size:14px}
+.shell{display:grid;grid-template-columns:240px 1fr;min-height:520px;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-soft);background:#fff}
+.side{background:var(--background-subtle);border-right:1px solid var(--border);padding:20px 14px;display:flex;flex-direction:column;gap:20px}
+.brand{display:flex;align-items:center;gap:10px;font:600 16px/1 inherit;color:var(--foreground)}
+.brand i{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--primary),#38BDF8);box-shadow:var(--shadow-button);display:grid;place-items:center;color:#fff;font-style:normal;font-size:15px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav .label{padding:8px 10px 4px}
+.nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-sm);color:var(--foreground-body);text-decoration:none;font-size:14px;font-weight:500}
+.nav a:hover{background:#EDF3FE}
+.nav a.active{background:var(--primary-soft);color:var(--primary-strong);box-shadow:var(--inner-soft)}
+.main{display:flex;flex-direction:column;min-width:0}
+.top{height:64px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;gap:16px}
+.top .crumb{font-size:13px;color:var(--muted-foreground)}
+.bell{position:relative;width:36px;height:36px;border-radius:var(--radius-sm);border:1px solid var(--border);background:#fff;display:grid;place-items:center;color:var(--foreground-body)}
+.bell b{position:absolute;top:-6px;right:-6px;background:var(--primary);color:#fff;font-size:10px;font-weight:600;border-radius:var(--radius-full);min-width:16px;height:16px;display:grid;place-items:center;padding:0 4px}
+.page{padding:32px 24px;display:flex;flex-direction:column;gap:24px}
+.prow{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.prow h1{font-size:24px;line-height:32px}
+.mini{height:10px;border-radius:5px;background:linear-gradient(90deg,#E9EFFA 25%,#F4F8FF 50%,#E9EFFA 75%);background-size:200% 100%;animation:sh 1.4s infinite}
+@keyframes sh{to{background-position:-200% 0}}
+.login-wrap{display:grid;place-items:center;min-height:560px;background:radial-gradient(1200px 400px at 50% -10%,var(--primary-softer),var(--background-subtle))}
+.login{width:400px;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-pop);padding:32px;display:flex;flex-direction:column;gap:18px}
+.login h1{font-size:22px;line-height:30px;text-align:center}
+.alert{display:flex;gap:10px;padding:12px 14px;border-radius:var(--radius-md);font-size:14px;line-height:20px;border:1px solid #F7CFCF;background:var(--destructive-bg);color:#991B1B}
+.list-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px}
+.list-row:last-child{border:none}
+.feed{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px}
+.feed:last-child{border:none}
+.feed .tick{width:28px;height:28px;border-radius:var(--radius-full);background:var(--primary-soft);color:var(--primary-strong);display:grid;place-items:center;font-size:12px;flex:none}
+.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.toolbar .grow{flex:1;min-width:220px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.note{max-width:1280px;margin:0 auto;padding:0 24px 8px;color:var(--muted-foreground);font-size:13px}
+@media (max-width:900px){
+  .grid4{grid-template-columns:repeat(2,1fr)}
+  .grid23{grid-template-columns:1fr}
+  .shell{grid-template-columns:1fr}
+  .side{display:none}
+  .hide-sm{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="section">
+  <div class="label">Stage 6 · Design system mockup · PulseFit Sports Club</div>
+  <h1>Prototype reference</h1>
+  <p class="cap">Rendered with the exact tokens from <code>docs/prototype/design-tokens.md</code>. This file is self-contained — open it in any browser.</p>
+</div>
+
+<!-- LOGIN -->
+<div class="section" style="padding-top:0">
+  <div class="label">Screen 1 — Login</div>
+  <div class="login-wrap" style="border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
+    <div class="login" style="margin:40px 0">
+      <div class="brand" style="justify-content:center"><i>P</i> PulseFit</div>
+      <h1>Welcome back</h1>
+      <div class="alert"><span>!</span><span>Invalid email or password.</span></div>
+      <div class="field"><label for="m1">Email</label><input id="m1" value="admin@pulsefit.club"></div>
+      <div class="field"><label for="m2">Password</label><input id="m2" type="password" value="••••••••••"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center">Sign in</button>
+      <p class="cap" style="text-align:center">Access is restricted to club accounts.</p>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="section" style="padding-top:0">
+  <div class="label">Screen 2 — Dashboard (admin/manager)</div>
+  <div class="shell">
+    <aside class="side">
+      <div class="brand"><i>P</i> PulseFit</div>
+      <nav class="nav">
+        <div class="label">Overview</div>
+        <a href="#" class="active">▦ Dashboard</a>
+        <div class="label">Operations</div>
+        <a href="#">.Members</a><a href="#">Calendar</a><a href="#">Memberships</a><a href="#">Payments</a><a href="#">Attendance</a>
+        <div class="label">Administration</div>
+        <a href="#">Users</a><a href="#">Facilities</a>
+      </nav>
+    </aside>
+    <div class="main">
+      <div class="top">
+        <span class="crumb">Overview / Dashboard</span>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn btn-outline btn-sm hide-sm">＋ Record payment</button>
+          <button class="btn btn-primary btn-sm">＋ Add member</button>
+          <span class="bell">🔔<b>3</b></span>
+          <span class="avatar">AM</span>
+        </div>
+      </div>
+      <div class="page">
+        <div class="prow">
+          <div><h1>Dashboard</h1><p class="cap">Thursday, 9 October — club is open</p></div>
+        </div>
+        <div class="grid4">
+          <div class="stat"><div style="display:flex;justify-content:space-between"><span class="label">Total members</span><span class="chip">👥</span></div><span class="num">1,284</span><span class="cap" style="color:var(--success)">▲ 6 this week</span></div>
+          <div class="stat"><div style="display:flex;justify-content:space-between"><span class="label">Active memberships</span><span class="chip">★</span></div><span class="num">1,147</span><span class="cap">89% of members</span></div>
+          <div class="stat"><div style="display:flex;justify-content:space-between"><span class="label">Today's attendance</span><span class="chip">✓</span></div><span class="num">96</span><span class="cap">12 classes today</span></div>
+          <div class="stat"><div style="display:flex;justify-content:space-between"><span class="label">Revenue · October</span><span class="chip">$</span></div><span class="num">$18,420</span><span class="cap" style="color:var(--success)">▲ 12% vs Sept</span></div>
+        </div>
+        <div class="grid23">
+          <div class="card">
+            <div class="prow" style="margin-bottom:16px"><h2>Revenue (12 months)</h2><span class="cap">COMPLETED payments</span></div>
+            <div style="display:flex;align-items:flex-end;gap:10px;height:150px">
+              <div style="flex:1;height:42%;background:var(--primary-soft);border-radius:6px 6px 0 0"></div>
+              <div style="flex:1;height:55%;background:var(--primary-soft);border-radius:6px 6px 0 0"></div>
+              <div style="flex:1;height:48%;background:var(--primary-soft);border-radius:6px 6px 0 0"></div>
+              <div style="flex:1;height:63%;background:var(--primary-soft);border-radius:6px 6px 0 0"></div>
+              <div style="flex:1;height:58%;background:var(--primary-soft);border-radius:6px 6px 0 0"></div>
+              <div style="flex:1;height:72%;background:var(--primary-soft);border-radius:6px 6px 0 0"></div>
+              <div style="flex:1;height:66%;background:var(--primary-soft);border-radius:6px 6px 0 0"></div>
+              <div style="flex:1;height:80%;background:var(--primary-soft);border-radius:6px 6px 0 0"></div>
+              <div style="flex:1;height:75%;background:var(--primary-soft);border-radius:6px 6px 0 0"></div>
+              <div style="flex:1;height:88%;background:var(--primary-soft);border-radius:6px 6px 0 0"></div>
+              <div style="flex:1;height:84%;background:var(--primary-soft);border-radius:6px 6px 0 0"></div>
+              <div style="flex:1;height:100%;background:var(--primary);border-radius:6px 6px 0 0;box-shadow:var(--shadow-button)"></div>
+            </div>
+            <div class="cap" style="display:flex;justify-content:space-between;margin-top:8px"><span>Nov</span><span>Oct</span></div>
+          </div>
+          <div class="card">
+            <div class="prow" style="margin-bottom:8px"><h2>Expiring soon</h2><span class="badge b-warning"><span class="dot"></span>14 days</span></div>
+            <div class="list-row"><span><b style="color:var(--foreground);font-weight:500">Olivia Chen</b><br><span class="cap">Quarterly Pro</span></span><span class="badge b-warning"><span class="dot"></span>3 days</span></div>
+            <div class="list-row"><span><b style="color:var(--foreground);font-weight:500">Mason Haddad</b><br><span class="cap">Monthly Core</span></span><span class="badge b-warning"><span class="dot"></span>6 days</span></div>
+            <div class="list-row"><span><b style="color:var(--foreground);font-weight:500">Mia Kowalski</b><br><span class="cap">Student Monthly</span></span><span class="badge b-warning"><span class="dot"></span>11 days</span></div>
+            <button class="btn btn-ghost btn-sm" style="margin-top:12px;color:var(--primary)">View all →</button>
+          </div>
+        </div>
+        <div class="grid23">
+          <div class="card" style="padding:0;overflow:hidden">
+            <div class="prow" style="padding:20px 24px 12px"><h2>Today's classes</h2><a class="cap" style="color:var(--primary);text-decoration:none" href="#">Open schedule →</a></div>
+            <table>
+              <thead><tr><th>Time</th><th>Class</th><th>Trainer</th><th>Room</th><th style="text-align:right">Spots</th></tr></thead>
+              <tbody>
+                <tr><td>09:00</td><td style="color:var(--foreground)">Morning Swim</td><td>Sofia L.</td><td>Indoor Pool</td><td class="num-cell">4 / 12</td></tr>
+                <tr><td>17:30</td><td style="color:var(--foreground)">Spin HIIT</td><td>James P.</td><td>Spin Studio</td><td class="num-cell"><span class="badge b-warning"><span class="dot"></span>2 left</span></td></tr>
+                <tr><td>19:00</td><td style="color:var(--foreground)">Yoga Flow</td><td>Sofia L.</td><td>Yoga Studio</td><td class="num-cell">9 / 16</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card">
+            <h2 style="margin-bottom:8px">Recent activity</h2>
+            <div class="feed"><span class="tick">＋</span><div><b style="font-weight:500;color:var(--foreground)">Member created</b><br><span class="cap">Nora O. · 12 min ago</span></div></div>
+            <div class="feed"><span class="tick">$</span><div><b style="font-weight:500;color:var(--foreground)">Payment recorded</b><br><span class="cap">$99.99 Quarterly Pro · 40 min ago</span></div></div>
+            <div class="feed"><span class="tick">✓</span><div><b style="font-weight:500;color:var(--foreground)">Attendance marked</b><br><span class="cap">Strength 101 · 1 h ago</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MEMBERS LIST -->
+<div class="section" style="padding-top:0">
+  <div class="label">Screen 3 — Members list</div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="prow" style="padding:24px 24px 16px">
+      <div><h2 style="font-size:22px;line-height:30px">Members</h2><p class="cap">1,284 total · 6 new this week</p></div>
+      <button class="btn btn-primary">＋ Add member</button>
+    </div>
+    <div class="toolbar" style="padding:0 24px 16px">
+      <div class="grow"><input placeholder="Search name, email or member code…"></div>
+      <select style="width:160px"><option>Status: All</option><option>Active</option><option>Inactive</option></select>
+      <button class="btn btn-outline btn-sm">Filters</button>
+    </div>
+    <table>
+      <thead><tr><th>Member</th><th>Code</th><th class="hide-sm">Email</th><th>Membership</th><th>Expires</th><th style="text-align:right">Actions</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="who"><span class="avatar">LF</span><span><b>Liam Foster</b><span class="cap">Joined 14 Jun 2026</span></span></span></td>
+          <td>MB-2026-001</td><td class="hide-sm">liam.foster@example.com</td>
+          <td><span class="badge b-success"><span class="dot"></span>Monthly Core</span></td><td>28 Oct 2026</td>
+          <td style="text-align:right"><button class="btn btn-ghost btn-sm">View</button></td>
+        </tr>
+        <tr>
+          <td><span class="who"><span class="avatar">OC</span><span><b>Olivia Chen</b><span class="cap">Joined 26 Jun 2026</span></span></span></td>
+          <td>MB-2026-002</td><td class="hide-sm">olivia.chen@example.com</td>
+          <td><span class="badge b-warning"><span class="dot"></span>Quarterly Pro · expiring</span></td><td>12 Oct 2026</td>
+          <td style="text-align:right"><button class="btn btn-ghost btn-sm">View</button></td>
+        </tr>
+        <tr>
+          <td><span class="who"><span class="avatar">NB</span><span><b>Noah Bergman</b><span class="cap">Joined 8 Jul 2026</span></span></span></td>
+          <td>MB-2026-003</td><td class="hide-sm">noah.bergman@example.com</td>
+          <td><span class="badge b-success"><span class="dot"></span>Annual Elite</span></td><td>3 Jul 2027</td>
+          <td style="text-align:right"><button class="btn btn-ghost btn-sm">View</button></td>
+        </tr>
+        <tr>
+          <td><span class="who"><span class="avatar">ES</span><span><b>Emma Silva</b><span class="cap">Joined 21 Jul 2026</span></span></span></td>
+          <td>MB-2026-004</td><td class="hide-sm">emma.silva@example.com</td>
+          <td><span class="badge b-destructive"><span class="dot"></span>Expired</span></td><td>20 Sep 2026</td>
+          <td style="text-align:right"><button class="btn btn-ghost btn-sm">View</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="prow" style="padding:14px 24px;border-top:1px solid var(--border);align-items:center">
+      <span class="cap">Showing 1–4 of 1,284</span>
+      <div style="display:flex;gap:8px"><button class="btn btn-outline btn-sm" disabled>←</button><button class="btn btn-outline btn-sm">→</button></div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:12px">On mobile this table renders as stacked cards (name + status + expiry + actions); filters open in a sheet.</p>
+</div>
+
+</body>
+</html>

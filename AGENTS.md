@@ -82,7 +82,7 @@ Architecture structured · work actually works · consistent with earlier stages
 ## Project Execution State
 
 ### Current Stage
-Stage 5 — COMPLETE. Next: Stage 6 (prototype / design system).
+Stage 6 — COMPLETE. Next: Stage 7 (application).
 
 ### Stage 0 — Bootstrap — COMPLETE
 - [x] Audit repository (single commit containing only plan.md; no code)
@@ -126,11 +126,13 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 - [x] Functional + non-functional requirements mapped to stories and later implementation — FR-01…FR-40, NFR-01…NFR-12, full traceability matrix (`docs/requirements/`)
 - [x] Commit, push, quality gate, mark COMPLETE
 
-## Stage 6 — Prototype / Design System
-- [ ] Branch `stage/06-prototype`
-- [ ] Design tokens, typography, spacing, component library per Design System section
-- [ ] Prototype screens in `docs/prototype/`; foundation implemented in `frontend/` so Stage 7 inherits it
-- [ ] Commit, push, quality gate, mark COMPLETE
+## Stage 6 — Prototype / Design System — COMPLETE
+- [x] Branch `stage/06-prototype`
+- [x] Design tokens, typography, spacing, component library per Design System section (`docs/prototype/` — design-tokens, typography, spacing, components, screens, README)
+- [x] Prototype screens in `docs/prototype/` (`mockups.html` self-contained visual mockup) + foundation implemented in `frontend/` so Stage 7 inherits it
+- [x] Frontend foundation: Next.js 15 + TS + Tailwind v4 scaffold, `globals.css` token layer (all design-system tokens as CSS vars + `@theme`, exact radii, elevation utilities `shadow-soft/pop/button/inner-soft`), self-hosted Inter, 20 shadcn/ui components in `src/components/ui/`, design-system preview page at `/` (colors, type, buttons, badges, forms, cards, alerts, table, overlays, tabs — all real components)
+- [x] Checks green: `next build`, `eslint .`, `tsc --noEmit` (frontend)
+- [x] Commit, push, quality gate, mark COMPLETE
 
 ## Stage 7 — Application
 - [ ] Branch `stage/07-application`
@@ -173,6 +175,8 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 8. plan.md was purged from git history by rebuilding the root commit (only commit existed at the time).
 9. `bcryptjs` (pure-JS bcrypt, v3) instead of native `bcrypt` — no compiler toolchain needed in CI/Docker/PRoot.
 10. npm installs here are slow and background/orphaned processes can deadlock under libproot — always run installs in the foreground with a generous timeout, never concurrently.
+11. Inter self-hosted via `@fontsource-variable/inter` instead of `next/font/google` — this environment (and any offline build) cannot reach Google Fonts; `next/font/google` failed the production build. CI/CD builds are now network-independent for fonts.
+12. shadcn/ui initialized with the `radix`/`radix-nova` preset (Tailwind v4, CSS variables, Lucide, unified `radix-ui` package, `cn` helper); base colors overridden to PulseFit tokens in `globals.css`; button default sizes retuned to spec (h-10 default / h-11 lg / size-10 icon).
 
 ## Constraints & Environment Notes
 
@@ -187,4 +191,4 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 
 ## Next Exact Action
 
-Start Stage 6: create branch `stage/06-prototype`, produce `docs/prototype/` (design tokens, typography, spacing, component inventory, screen mockups as Mermaid/HTML specs) and implement the design-system foundation in `frontend/` (Next.js scaffold, tokens, base shadcn components) so Stage 7 inherits it.
+Start Stage 7: create branch `stage/07-application`. Backend first: Express + TS `src/` modular layout (auth/users/members/memberships/plans/classes/enrollment/attendance/payments/trainers/facilities/notifications/dashboard), JWT httpOnly cookie auth + bcryptjs, RBAC middleware, zod validation, error envelope, offset pagination, request logging, rate limiting on auth; `prisma migrate deploy` + seed verification via CI Postgres. Then frontend pages for all 44 stories with loading/empty/error/denied states, tests (auth, authorization, membership rules, enrollment capacity, payment validation, key endpoints), realistic demo seed — every button/form/endpoint works against the design-system foundation inherited from Stage 6.
