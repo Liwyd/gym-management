@@ -82,15 +82,15 @@ Architecture structured · work actually works · consistent with earlier stages
 ## Project Execution State
 
 ### Current Stage
-Stage 0 — bootstrap (this file, history cleanup)
+Stage 0 — COMPLETE. Next: Stage 1 (analysis artifacts).
 
-### Stage 0 — Bootstrap
+### Stage 0 — Bootstrap — COMPLETE
 - [x] Audit repository (single commit containing only plan.md; no code)
 - [x] Configure git identity and push authentication
 - [x] Distill plan.md into AGENTS.md
 - [x] Add .gitignore
-- [x] Remove plan.md from git history (rebuild root commit + gc)
-- [x] Force-push clean history to origin/main
+- [x] Remove plan.md from git history (fresh root commit; object store rebuilt after aggressive gc corrupted loose objects on this PRoot filesystem — avoid `gc --aggressive --prune=now` here)
+- [x] Force-push clean history to origin/main (`be23ac7` → `460249d`, verified: no plan.md in any reachable object)
 
 ## Stage 1 — Analysis
 - [ ] Branch `stage/01-analysis`
@@ -173,7 +173,7 @@ Stage 0 — bootstrap (this file, history cleanup)
 ## Constraints & Environment Notes
 
 - This environment has **no Docker / docker-compose**: Stage 8–9 runtime behavior must be verified via GitHub Actions and static checks; never claim local Docker verification.
-- `git-filter-repo` unavailable → history cleanup used root-commit rebuild + `reflog expire` + `gc --prune=now`.
+- `git-filter-repo` unavailable → history cleanup used a fresh root commit (`git init` + new commit + `--force-with-lease` push). **Do not run `git gc --aggressive --prune=now` in this workspace** — it corrupted loose objects on the PRoot/FUSE filesystem once already.
 - Demo/seed data must match the real schema; no absurdly large datasets.
 - Never commit secrets: only `.env.example` with variable names.
 
