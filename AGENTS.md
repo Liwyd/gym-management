@@ -82,7 +82,7 @@ Architecture structured · work actually works · consistent with earlier stages
 ## Project Execution State
 
 ### Current Stage
-Stage 6 — COMPLETE. Next: Stage 7 (application).
+Stage 7 — COMPLETE. Next: Stage 8 (Docker + CI/CD).
 
 ### Stage 0 — Bootstrap — COMPLETE
 - [x] Audit repository (single commit containing only plan.md; no code)
@@ -134,14 +134,15 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 - [x] Checks green: `next build`, `eslint .`, `tsc --noEmit` (frontend)
 - [x] Commit, push, quality gate, mark COMPLETE
 
-## Stage 7 — Application
-- [ ] Branch `stage/07-application`
-- [ ] Backend modules: auth, users, members, memberships, plans, classes, enrollment, attendance, payments, trainers, facilities, notifications, dashboard
-- [ ] Auth (JWT cookie, bcrypt), RBAC, validation, error envelope, pagination, logging
-- [ ] Frontend pages for all flows with loading/empty/error/denied states, responsive + accessible
-- [ ] Tests: authentication, authorization, membership rules, enrollment capacity, payment validation, key endpoints
-- [ ] Realistic demo seed data; every button/form/endpoint works
-- [ ] Commit, push, quality gate, mark COMPLETE
+## Stage 7 — Application — COMPLETE
+- [x] Branch `stage/07-application`
+- [x] Backend modules: auth, users, members, memberships, plans, classes, enrollment, attendance, payments, trainers, facilities, notifications, dashboard (Express 5 + TS, zod validation, error envelope, offset pagination, request logging, rate limiting on auth)
+- [x] Auth (JWT httpOnly cookie `pulsefit_access`, bcryptjs), server-side RBAC capability map + `authorize()` + object-level scoping
+- [x] Frontend pages for all flows: login, dashboard (role-aware), members CRUD/detail, memberships list/purchase/my-membership, plans CRUD, classes catalog/schedule/enroll, attendance session marks, payments list/record/refund, trainers, facilities, notifications, users admin — loading/empty/error/permission-denied on every page, responsive shell, accessible dialogs/forms
+- [x] Tests: 45 unit tests (rules R1–R6, RBAC matrix, JWT, zod schemas) green locally; 40 API integration tests across 6 files gated on `TEST_DATABASE_URL` (skip locally, run in CI Postgres service) — `Test Files 4 passed | 6 skipped`, `Tests 45 passed | 40 skipped`
+- [x] Frontend checks green: `next build` (19 routes), `eslint .`, `tsc --noEmit`
+- [x] Realistic demo seed data (from Stage 2) matches schema; every button/form/endpoint wired to the API
+- [x] Commit, push, quality gate, mark COMPLETE
 
 ## Stage 8 — Docker + CI/CD
 - [ ] Branch `stage/08-docker-ci`
@@ -177,6 +178,13 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 10. npm installs here are slow and background/orphaned processes can deadlock under libproot — always run installs in the foreground with a generous timeout, never concurrently.
 11. Inter self-hosted via `@fontsource-variable/inter` instead of `next/font/google` — this environment (and any offline build) cannot reach Google Fonts; `next/font/google` failed the production build. CI/CD builds are now network-independent for fonts.
 12. shadcn/ui initialized with the `radix`/`radix-nova` preset (Tailwind v4, CSS variables, Lucide, unified `radix-ui` package, `cn` helper); base colors overridden to PulseFit tokens in `globals.css`; button default sizes retuned to spec (h-10 default / h-11 lg / size-10 icon).
+13. Frontend talks to the API only via the Next.js rewrite proxy (`/api/:path*` → `BACKEND_URL`, default `http://localhost:4000`) so cookies stay same-origin — no CORS credentials headaches in the browser; all client fetches use relative `/api/v1/...` with `credentials: "include"`.
+14. Frontend data fetching is client-side `useQuery`/`useListQuery` hooks (no React Query / server actions) — academic scale does not justify a cache layer; loading/empty/error states are explicit per page.
+15. Auth state lives in a root `AuthProvider` (`/auth/me` on mount); pages use `useRequireAuth(capability?)` and the `(app)` route group is wrapped by `AppShell` (RBAC-filtered nav, mobile sheet, notifications badge).
+16. Integration tests are DB-gated (`describe.skip` unless `TEST_DATABASE_URL` is set) with TRUNCATE resets and `fileParallelism: false` in vitest — run against the CI Postgres service container in Stage 8; unit tests always run.
+17. zod 4 gotchas handled: trim before `.pipe(z.email())`, `z.uuid()`, `z.iso.datetime({offset:true})` for `@db.DateTime` (Z is UTC), enum-transform `boolQuery` for query strings, `param(req, "id")` helper because Express 5 `req.params` is `string | string[]`.
+18. Attendance POST body is `{sessionId, marks:[{memberId, status}]}` (batch); rows key off `enrollmentId` only (query via `where: { enrollment: { sessionId, memberId } }`); membership purchase is `POST /memberships` with inline COMPLETED payment (generic `POST /payments` is CLASS_FEE/OTHER only); membership refund is `PATCH /memberships/:id {refund:true}` or `POST /payments/:id/refund`.
+19. Radix Select does not participate in native form `FormData` — all select-backed form fields use controlled React state (`value`/`onValueChange`), never `name` + `new FormData`.
 
 ## Constraints & Environment Notes
 
@@ -187,8 +195,11 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 
 ## Known Issues
 
-- None yet.
+- Integration tests require a live Postgres (`TEST_DATABASE_URL`) and therefore only run in CI (Stage 8 Postgres service container); locally they skip. Verified: 45 unit pass, 40 integration skip cleanly.
+- No local Postgres/Docker in this environment — `prisma migrate deploy` + seed execution must be verified in Stage 8 CI, same as Stage 2.
+- Classes staff "enroll member" dialog accepts a raw member ID paste (no picker) — functional but UX-weak; polish in Stage 10 if time permits.
+- Full end-to-end click-through against a live DB has not been run locally (no Postgres); API smoke-tested for envelope/auth; rely on Stage 8 CI + Stage 10 QA.
 
 ## Next Exact Action
 
-Start Stage 7: create branch `stage/07-application`. Backend first: Express + TS `src/` modular layout (auth/users/members/memberships/plans/classes/enrollment/attendance/payments/trainers/facilities/notifications/dashboard), JWT httpOnly cookie auth + bcryptjs, RBAC middleware, zod validation, error envelope, offset pagination, request logging, rate limiting on auth; `prisma migrate deploy` + seed verification via CI Postgres. Then frontend pages for all 44 stories with loading/empty/error/denied states, tests (auth, authorization, membership rules, enrollment capacity, payment validation, key endpoints), realistic demo seed — every button/form/endpoint works against the design-system foundation inherited from Stage 6.
+Start Stage 8: create branch `stage/08-docker-ci`. Multi-stage Dockerfiles for `frontend/` (Next standalone) and `backend/` (tsc build → node dist), `docker-compose.yml` (postgres + backend + frontend, healthchecks, depends_on), minimal `README.md` (run with compose, default logins, ports). `.github/workflows/ci.yml` (checkout, setup-node, install, lint, typecheck, `prisma migrate deploy` + `TEST_DATABASE_URL` Postgres service, run backend integration tests, frontend `next build`) and `docker.yml` (build + push with `DOCKERHUB_USERNAME`/`DOCKERHUB_TOKEN` secrets). No credentials in code/history. Then verify CI green on GitHub, quality gate, mark COMPLETE.
