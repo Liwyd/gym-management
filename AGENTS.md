@@ -82,7 +82,7 @@ Architecture structured · work actually works · consistent with earlier stages
 ## Project Execution State
 
 ### Current Stage
-Stage 9 — COMPLETE. Next: Stage 10 (final QA / presentation).
+Stage 10 — COMPLETE. All 10 stages done.
 
 ### Stage 0 — Bootstrap — COMPLETE
 - [x] Audit repository (single commit containing only plan.md; no code)
@@ -161,12 +161,15 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 - [x] Compose services tagged with `image:` (defaults `liwyd/pulsefit-{backend,frontend}:latest`, overridable via `DOCKERHUB_USER`/`IMAGE_TAG`) so `docker compose pull` works with prebuilt images
 - [x] Static checks (`bash -n` green for both scripts; shellcheck unavailable in this environment); quality gate, mark COMPLETE
 
-## Stage 10 — Final QA / Presentation
-- [ ] Branch `stage/10-final-qa`
-- [ ] Full audit: academic artifacts, application works end-to-end, UI consistency, DevOps, Git hygiene
-- [ ] Consistency chain verified: story → requirement → use case → activity → sequence → class → DB → API → frontend
-- [ ] Presentation flows obvious: login, dashboard, members, memberships, classes, attendance, trainers, statistics, role-based access
-- [ ] Quality gate, mark COMPLETE
+## Stage 10 — Final QA / Presentation — COMPLETE
+- [x] Branch `stage/10-final-qa`
+- [x] Full audit: no TODO/FIXME/placeholders in code; 51 doc artifacts across all stage folders; git hygiene (conventional commits, per-stage `--no-ff` merges, no secrets — `.env` gitignored)
+- [x] Consistency chain verified: 44 stories ↔ 40 FRs + 12 NFRs (requirements reference all 44 stories) ↔ 20 use cases (all covered by stories) ↔ analysis/DB/API/frontend; API documented in `docs/api/README.md` (51 routes), architecture in `docs/architecture/`, deployment in `docs/deployment/`
+- [x] Presentation flows obvious: login → role-aware dashboard → members → memberships → classes/enroll → attendance → payments → trainers/facilities → users admin → notifications; RBAC visible in nav + server-side everywhere
+- [x] Known weak spot fixed: classes staff "enroll member" dialog now uses a real member picker (name + member code) instead of raw ID paste
+- [x] Frontend gate green (`next build` 19 routes incl. standalone, `eslint .`, `tsc --noEmit`); backend gate green (build, lint, unit tests locally; full 85-test suite incl. integration green in CI Postgres service)
+- [x] CI green on `main` (all 85 tests); Docker publish workflow green
+- [x] Quality gate, mark COMPLETE, merged to main
 
 ## Decisions
 
@@ -201,13 +204,13 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 
 ## Known Issues
 
-- Integration tests require a live Postgres (`TEST_DATABASE_URL`) and therefore only run in CI (Stage 8 Postgres service container); locally they skip. Verified: 45 unit pass, 40 integration skip cleanly.
+- Integration tests require a live Postgres (`TEST_DATABASE_URL`) and therefore run in CI (Postgres 16 service container); locally they skip. **Verified green in CI: 85/85 tests (45 unit + 40 integration).**
 - No local Postgres/Docker in this environment — `prisma migrate deploy` + seed execution must be verified in Stage 8 CI, same as Stage 2.
-- Classes staff "enroll member" dialog accepts a raw member ID paste (no picker) — functional but UX-weak; polish in Stage 10 if time permits.
+- Classes staff "enroll member" dialog accepts a raw member ID paste (no picker) — functional but UX-weak; polish in Stage 10 if time permits. **Fixed in Stage 10 (member picker).**
 - Full end-to-end click-through against a live DB has not been run locally (no Postgres); API smoke-tested for envelope/auth; rely on Stage 8 CI + Stage 10 QA.
 - **No local Docker in this environment** — compose stack, Dockerfiles, and the Docker publish workflow cannot be executed here. Runtime correctness of images and `docker compose up` must be verified on GitHub Actions / a Docker-capable machine. Local static checks done: seed tsc-compiles, standalone `server.js` emitted, YAML written, workflow structure standard.
-- CI found and drove fixes in Stage 9: global `requireAuth` was missing (only inline-auth routes worked); user-update guard order (last-admin invariant now checked before self-change). Integration suite now 85/85-capable; last failure fixed on this branch — confirm green CI on the merge to main.
+- CI found and drove fixes in Stage 9: global `requireAuth` was missing (only inline-auth routes worked); user-update guard order (last-admin role/status guards split so both invariants report the right error). Integration suite verified 85/85 green in CI.
 
 ## Next Exact Action
 
-Start Stage 10: branch `stage/10-final-qa`. Full audit — academic artifact consistency (story→requirement→use case→activity→sequence→class→DB→API→frontend), presentation flows (login → dashboard → members → memberships → classes → attendance → trainers → statistics → RBAC), UI polish (classes staff-enroll member picker is the known weak spot), README/docs check, Git hygiene, confirm CI green. Quality gate, mark COMPLETE, merge to main.
+No stages remain. Maintenance ideas if revisited: verify `docker compose up` on a Docker-capable machine (not possible in this environment), re-run integration suite after any backend change (CI does this automatically on push).

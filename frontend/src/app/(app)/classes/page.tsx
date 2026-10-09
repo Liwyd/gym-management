@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { CalendarPlus, Dumbbell, Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useRequireAuth } from "@/components/auth/auth-context";
@@ -33,6 +33,13 @@ interface ClassListItem extends FitnessClass {
   upcomingSessions: number;
 }
 
+interface MemberOption {
+  id: string;
+  memberCode: string;
+  firstName: string;
+  lastName: string;
+}
+
 export default function ClassesPage() {
   const auth = useRequireAuth();
   const canWriteClasses = auth.can("classes:write");
@@ -50,6 +57,9 @@ export default function ClassesPage() {
   const { items: facilities } = useListQuery<Facility>(
     auth.user ? "/facilities?limit=100" : null,
   );
+  const { items: memberOptions } = useListQuery<MemberOption>(
+    auth.user && auth.user.role !== "MEMBER" ? "/members?limit=100" : null,
+  );
 
   const [classDialog, setClassDialog] = useState(false);
   const [editingClass, setEditingClass] = useState<ClassListItem | null>(null);
@@ -60,11 +70,6 @@ export default function ClassesPage() {
 
   const isMember = auth.user?.role === "MEMBER";
   const myMemberId = auth.user?.member?.id;
-
-  const visibleSessions = useMemo(() => {
-    if (!isMember) return sessions;
-    return sessions;
-  }, [sessions, isMember]);
 
   async function saveClass(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -206,7 +211,7 @@ export default function ClassesPage() {
         <TabsList>
           <TabsTrigger value="catalog">Catalog</TabsTrigger>
           <TabsTrigger value="schedule">
-            Upcoming sessions{visibleSessions.length ? ` (${visibleSessions.length})` : ""}
+            Upcoming sessions{sessions.length ? ` (${sessions.length})` : ""}
           </TabsTrigger>
         </TabsList>
 
@@ -266,7 +271,7 @@ export default function ClassesPage() {
         </TabsContent>
 
         <TabsContent value="schedule" className="mt-4">
-          {visibleSessions.length === 0 ? (
+          {sessions.length === 0 ? (
             <EmptyState
               title="No upcoming sessions"
               description="Sessions scheduled by staff or trainers will appear here."
@@ -274,7 +279,7 @@ export default function ClassesPage() {
           ) : (
             <Card className="shadow-soft">
               <CardContent className="divide-y divide-border p-0">
-                {visibleSessions.map((s) => (
+                {sessions.map((s) => (
                   <div
                     key={s.id}
                     className="flex flex-wrap items-center justify-between gap-3 p-4"
@@ -498,13 +503,20 @@ export default function ClassesPage() {
           {!isMember ? (
             <div className="space-y-2">
               <Label htmlFor="enroll-member">Member</Label>
-              <Input
+              <select
                 id="enroll-member"
-                placeholder="Paste member id from Members screen"
                 value={enrollMemberId}
                 onChange={(e) => setEnrollMemberId(e.target.value)}
                 required
-              />
+                className="flex h-10 w-full rounded-lg border border-input bg-background px-3 text-sm"
+              >
+                <option value="">Select a member…</option>
+                {memberOptions.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.firstName} {m.lastName} ({m.memberCode})
+                  </option>
+                ))}
+              </select>
             </div>
           ) : null}
           <DialogFooter>
