@@ -133,13 +133,13 @@ usersRouter.patch("/users/:id", authorize("users:write"), async (req, res) => {
 
   const actor = req.user!;
 
-  // System invariant first: never leave the club without an active admin,
-  // even when the last admin attempts it themselves.
-  if (
+  const wouldDemoteLastAdmin =
     target.role === Role.ADMIN &&
-    ((input.role !== undefined && input.role !== Role.ADMIN) ||
-      input.status === UserStatus.INACTIVE)
-  ) {
+    input.role !== undefined &&
+    input.role !== Role.ADMIN &&
+    target.status === UserStatus.ACTIVE;
+
+  if (wouldDemoteLastAdmin) {
     const otherAdmins = await prisma.user.count({
       where: { role: Role.ADMIN, status: UserStatus.ACTIVE, id: { not: target.id } },
     });
@@ -154,6 +154,15 @@ usersRouter.patch("/users/:id", authorize("users:write"), async (req, res) => {
       (input.status !== undefined && input.status !== target.status)
     ) {
       throw conflict("You cannot change your own role or status");
+    }
+  }
+
+  if (target.role === Role.ADMIN && input.status === UserStatus.INACTIVE) {
+    const otherAdmins = await prisma.user.count({
+      where: { role: Role.ADMIN, status: UserStatus.ACTIVE, id: { not: target.id } },
+    });
+    if (otherAdmins === 0) {
+      throw conflict("At least one active administrator must remain");
     }
   }
 
