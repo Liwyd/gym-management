@@ -82,7 +82,7 @@ Architecture structured · work actually works · consistent with earlier stages
 ## Project Execution State
 
 ### Current Stage
-Stage 8 — COMPLETE. Next: Stage 9 (installer + manager script).
+Stage 9 — COMPLETE. Next: Stage 10 (final QA / presentation).
 
 ### Stage 0 — Bootstrap — COMPLETE
 - [x] Audit repository (single commit containing only plan.md; no code)
@@ -154,11 +154,12 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 - [x] Local static verification: compose + workflow YAML written; seed compiles standalone (`tsc` → `dist/prisma/seed.js`); frontend `next build` emits standalone `server.js`; backend build/lint green; no Docker in this environment — compose/CI runtime verified on GitHub Actions only
 - [x] Commit, push, quality gate, mark COMPLETE
 
-## Stage 9 — Installer + Management
-- [ ] Branch `stage/09-installer`
-- [ ] `scripts/install.sh` (OS/arch detect, dependency + Docker checks, prompts, dirs, image pull, env config, start, health verify, URLs, next commands, polished TUI)
-- [ ] `scripts/manager.sh` (install, update, start, stop, restart, status, logs, backup, uninstall with confirmation, help)
-- [ ] Static checks (`bash -n`, shellcheck if available); quality gate, mark COMPLETE
+## Stage 9 — Installer + Management — COMPLETE
+- [x] Branch `stage/09-installer`
+- [x] `scripts/install.sh` (OS/arch detect, Git/Docker/Compose checks, interactive prompts with defaults, auto JWT secret, copy/clone to install dir, `.env` written 600, `compose up -d --build`, optional seed, health verification with retries, URLs + demo logins + next commands printed)
+- [x] `scripts/manager.sh` (install, update, start, stop, restart, status, logs, seed, backup via `pg_dump | gzip` to `backups/`, uninstall with confirmation, help)
+- [x] Compose services tagged with `image:` (defaults `liwyd/pulsefit-{backend,frontend}:latest`, overridable via `DOCKERHUB_USER`/`IMAGE_TAG`) so `docker compose pull` works with prebuilt images
+- [x] Static checks (`bash -n` green for both scripts; shellcheck unavailable in this environment); quality gate, mark COMPLETE
 
 ## Stage 10 — Final QA / Presentation
 - [ ] Branch `stage/10-final-qa`
@@ -205,7 +206,8 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 - Classes staff "enroll member" dialog accepts a raw member ID paste (no picker) — functional but UX-weak; polish in Stage 10 if time permits.
 - Full end-to-end click-through against a live DB has not been run locally (no Postgres); API smoke-tested for envelope/auth; rely on Stage 8 CI + Stage 10 QA.
 - **No local Docker in this environment** — compose stack, Dockerfiles, and the Docker publish workflow cannot be executed here. Runtime correctness of images and `docker compose up` must be verified on GitHub Actions / a Docker-capable machine. Local static checks done: seed tsc-compiles, standalone `server.js` emitted, YAML written, workflow structure standard.
+- CI found and drove fixes in Stage 9: global `requireAuth` was missing (only inline-auth routes worked); user-update guard order (last-admin invariant now checked before self-change). Integration suite now 85/85-capable; last failure fixed on this branch — confirm green CI on the merge to main.
 
 ## Next Exact Action
 
-Start Stage 9: create branch `stage/09-installer`. `scripts/install.sh` — OS/arch detect, dependency + Docker checks, interactive prompts, config dirs, `docker compose pull`/`up`, env config, health verification, print URLs + next commands, polished TUI. `scripts/manager.sh` — install, update, start, stop, restart, status, logs, backup, uninstall (with confirmation), help. Static checks only here (`bash -n`, shellcheck if present); no Docker to execute them. Quality gate, mark COMPLETE, then Stage 10 (final QA + presentation).
+Start Stage 10: branch `stage/10-final-qa`. Full audit — academic artifact consistency (story→requirement→use case→activity→sequence→class→DB→API→frontend), presentation flows (login → dashboard → members → memberships → classes → attendance → trainers → statistics → RBAC), UI polish (classes staff-enroll member picker is the known weak spot), README/docs check, Git hygiene, confirm CI green. Quality gate, mark COMPLETE, merge to main.
