@@ -82,7 +82,7 @@ Architecture structured · work actually works · consistent with earlier stages
 ## Project Execution State
 
 ### Current Stage
-Stage 2 — COMPLETE. Next: Stage 3 (use cases).
+Stage 3 — COMPLETE. Next: Stage 4 (user stories).
 
 ### Stage 0 — Bootstrap — COMPLETE
 - [x] Audit repository (single commit containing only plan.md; no code)
@@ -110,11 +110,11 @@ Stage 2 — COMPLETE. Next: Stage 3 (use cases).
 
 Known limitation: no local Postgres/Docker in this environment — `migrate deploy` + seed execution must be verified in Stage 7/8 CI (Postgres service container). Schema validated with `prisma validate`, client generated, seed type-checked with `tsc --noEmit`.
 
-## Stage 3 — Use Cases
-- [ ] Branch `stage/03-use-cases`
-- [ ] Use case diagram + descriptions (actor, preconditions, main flow, alternatives, errors, postconditions)
-- [ ] Supporting sequence and activity diagrams; consistent with DB and planned implementation
-- [ ] Commit, push, quality gate, mark COMPLETE
+## Stage 3 — Use Cases — COMPLETE
+- [x] Branch `stage/03-use-cases`
+- [x] Use case diagram + descriptions (actor, preconditions, main/alternative/error flows, postconditions) — 20 use cases in `docs/use-cases/`
+- [x] Supporting sequence and activity diagrams; consistent with DB and planned implementation (Stage 1 diagrams referenced; login / enrollment-cancel / session-cancel activities added)
+- [x] Commit, push, quality gate, mark COMPLETE
 
 ## Stage 4 — User Stories
 - [ ] Branch `stage/04-user-stories`
@@ -187,4 +187,4 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 
 ## Next Exact Action
 
-Start Stage 3: create branch `stage/03-use-cases`, produce `docs/use-cases/` (use case diagram + full descriptions with actor, preconditions, main/alternative/error flows, postconditions) consistent with Stage 1–2.
+Start Stage 4: create branch `stage/04-user-stories`, produce `docs/user-stories/` (stories with acceptance criteria, priority, related use case, status, grouped by epic) covering all 20 use cases.
