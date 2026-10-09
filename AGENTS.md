@@ -82,7 +82,7 @@ Architecture structured · work actually works · consistent with earlier stages
 ## Project Execution State
 
 ### Current Stage
-Stage 7 — COMPLETE. Next: Stage 8 (Docker + CI/CD).
+Stage 8 — COMPLETE. Next: Stage 9 (installer + manager script).
 
 ### Stage 0 — Bootstrap — COMPLETE
 - [x] Audit repository (single commit containing only plan.md; no code)
@@ -144,12 +144,15 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 - [x] Realistic demo seed data (from Stage 2) matches schema; every button/form/endpoint wired to the API
 - [x] Commit, push, quality gate, mark COMPLETE
 
-## Stage 8 — Docker + CI/CD
-- [ ] Branch `stage/08-docker-ci`
-- [ ] Multi-stage Dockerfiles (frontend, backend), `docker-compose.yml` with healthchecks, `.env.example`
-- [ ] Minimal `README.md`
-- [ ] `ci.yml` (install, lint, typecheck, test, build) and `docker.yml` (build + push with `DOCKERHUB_USERNAME`/`DOCKERHUB_TOKEN` GitHub secrets)
-- [ ] CI green; no credentials in code/history; quality gate, mark COMPLETE
+## Stage 8 — Docker + CI/CD — COMPLETE
+- [x] Branch `stage/08-docker-ci`
+- [x] Multi-stage Dockerfiles (frontend standalone output; backend tsc → node dist + compiled seed + prod-only prisma client), `.dockerignore`
+- [x] `docker-compose.yml`: postgres 16 + backend + frontend, healthchecks (`pg_isready` / `/api/v1/health` / `/`), `depends_on: service_healthy`, named volume, env defaults; backend runs `prisma migrate deploy` on start; seed via `docker compose exec backend node dist/prisma/seed.js`
+- [x] Minimal `README.md` (compose quickstart, default logins, ports, dev-without-Docker, tests, docs pointer)
+- [x] `.github/workflows/ci.yml`: backend job (Postgres 16 service container, `TEST_DATABASE_URL`, lint/typecheck/`prisma validate`/`migrate deploy`/`npm test` — unit + integration run here) + frontend job (lint/typecheck/`next build`); concurrency-cancel; Node 22 + npm cache
+- [x] `.github/workflows/docker.yml`: buildx multi-image build+push on `main`/tags with `DOCKERHUB_USERNAME`/`DOCKERHUB_TOKEN` secrets, GHA layer cache, sha/branch/semver/latest tags
+- [x] Local static verification: compose + workflow YAML written; seed compiles standalone (`tsc` → `dist/prisma/seed.js`); frontend `next build` emits standalone `server.js`; backend build/lint green; no Docker in this environment — compose/CI runtime verified on GitHub Actions only
+- [x] Commit, push, quality gate, mark COMPLETE
 
 ## Stage 9 — Installer + Management
 - [ ] Branch `stage/09-installer`
@@ -185,6 +188,8 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 17. zod 4 gotchas handled: trim before `.pipe(z.email())`, `z.uuid()`, `z.iso.datetime({offset:true})` for `@db.DateTime` (Z is UTC), enum-transform `boolQuery` for query strings, `param(req, "id")` helper because Express 5 `req.params` is `string | string[]`.
 18. Attendance POST body is `{sessionId, marks:[{memberId, status}]}` (batch); rows key off `enrollmentId` only (query via `where: { enrollment: { sessionId, memberId } }`); membership purchase is `POST /memberships` with inline COMPLETED payment (generic `POST /payments` is CLASS_FEE/OTHER only); membership refund is `PATCH /memberships/:id {refund:true}` or `POST /payments/:id/refund`.
 19. Radix Select does not participate in native form `FormData` — all select-backed form fields use controlled React state (`value`/`onValueChange`), never `name` + `new FormData`.
+20. Docker: multi-stage with **repo root as build context** (`docker build -f docker/Dockerfile.backend .`); backend runner installs `prisma` globally for `migrate deploy` and ships a **tsc-compiled seed** (`dist/prisma/seed.js`) so the runtime image stays prod-only (no tsx). Frontend uses `output: "standalone"`; `BACKEND_URL` is a **build ARG baked into the rewrite manifest** (default `http://backend:4000`, matching the compose service name).
+21. CI runs integration tests against a Postgres 16 service container with `TEST_DATABASE_URL` (same creds as `DATABASE_URL`); `prisma migrate deploy` runs before `npm test`. Docker publish workflow needs GitHub secrets `DOCKERHUB_USERNAME` + `DOCKERHUB_TOKEN` — set before the first push to `main` triggers it.
 
 ## Constraints & Environment Notes
 
@@ -199,7 +204,8 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 - No local Postgres/Docker in this environment — `prisma migrate deploy` + seed execution must be verified in Stage 8 CI, same as Stage 2.
 - Classes staff "enroll member" dialog accepts a raw member ID paste (no picker) — functional but UX-weak; polish in Stage 10 if time permits.
 - Full end-to-end click-through against a live DB has not been run locally (no Postgres); API smoke-tested for envelope/auth; rely on Stage 8 CI + Stage 10 QA.
+- **No local Docker in this environment** — compose stack, Dockerfiles, and the Docker publish workflow cannot be executed here. Runtime correctness of images and `docker compose up` must be verified on GitHub Actions / a Docker-capable machine. Local static checks done: seed tsc-compiles, standalone `server.js` emitted, YAML written, workflow structure standard.
 
 ## Next Exact Action
 
-Start Stage 8: create branch `stage/08-docker-ci`. Multi-stage Dockerfiles for `frontend/` (Next standalone) and `backend/` (tsc build → node dist), `docker-compose.yml` (postgres + backend + frontend, healthchecks, depends_on), minimal `README.md` (run with compose, default logins, ports). `.github/workflows/ci.yml` (checkout, setup-node, install, lint, typecheck, `prisma migrate deploy` + `TEST_DATABASE_URL` Postgres service, run backend integration tests, frontend `next build`) and `docker.yml` (build + push with `DOCKERHUB_USERNAME`/`DOCKERHUB_TOKEN` secrets). No credentials in code/history. Then verify CI green on GitHub, quality gate, mark COMPLETE.
+Start Stage 9: create branch `stage/09-installer`. `scripts/install.sh` — OS/arch detect, dependency + Docker checks, interactive prompts, config dirs, `docker compose pull`/`up`, env config, health verification, print URLs + next commands, polished TUI. `scripts/manager.sh` — install, update, start, stop, restart, status, logs, backup, uninstall (with confirmation), help. Static checks only here (`bash -n`, shellcheck if present); no Docker to execute them. Quality gate, mark COMPLETE, then Stage 10 (final QA + presentation).

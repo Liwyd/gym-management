@@ -6,6 +6,7 @@ const backend =
   "http://localhost:4000";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   async rewrites() {
     return [
       {
