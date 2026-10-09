@@ -213,7 +213,7 @@ async function main() {
     };
   });
   await prisma.classSession.createMany({
-    data: sessions.map(({ classKey, capacity, ...s }) => s),
+    data: sessions.map(({ classKey: _classKey, capacity: _capacity, ...s }) => s),
   });
 
   // --- Enrollments + attendance --------------------------------------------
