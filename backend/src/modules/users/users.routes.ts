@@ -133,15 +133,8 @@ usersRouter.patch("/users/:id", authorize("users:write"), async (req, res) => {
 
   const actor = req.user!;
 
-  if (target.id === actor.id) {
-    if (
-      (input.role !== undefined && input.role !== target.role) ||
-      (input.status !== undefined && input.status !== target.status)
-    ) {
-      throw conflict("You cannot change your own role or status");
-    }
-  }
-
+  // System invariant first: never leave the club without an active admin,
+  // even when the last admin attempts it themselves.
   if (
     target.role === Role.ADMIN &&
     ((input.role !== undefined && input.role !== Role.ADMIN) ||
@@ -152,6 +145,15 @@ usersRouter.patch("/users/:id", authorize("users:write"), async (req, res) => {
     });
     if (otherAdmins === 0) {
       throw conflict("At least one active administrator must remain");
+    }
+  }
+
+  if (target.id === actor.id) {
+    if (
+      (input.role !== undefined && input.role !== target.role) ||
+      (input.status !== undefined && input.status !== target.status)
+    ) {
+      throw conflict("You cannot change your own role or status");
     }
   }
 
