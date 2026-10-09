@@ -82,7 +82,7 @@ Architecture structured · work actually works · consistent with earlier stages
 ## Project Execution State
 
 ### Current Stage
-Stage 4 — COMPLETE. Next: Stage 5 (requirements).
+Stage 5 — COMPLETE. Next: Stage 6 (prototype / design system).
 
 ### Stage 0 — Bootstrap — COMPLETE
 - [x] Audit repository (single commit containing only plan.md; no code)
@@ -121,10 +121,10 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 - [x] Stories in "As a / I want / so that" with acceptance criteria, priority, related use case, status; grouped by epic — 44 stories (US-01…US-44) in `docs/user-stories/`, all 20 use cases covered
 - [x] Commit, push, quality gate, mark COMPLETE
 
-## Stage 5 — Requirements
-- [ ] Branch `stage/05-requirements`
-- [ ] Functional + non-functional requirements mapped to stories and later implementation
-- [ ] Commit, push, quality gate, mark COMPLETE
+## Stage 5 — Requirements — COMPLETE
+- [x] Branch `stage/05-requirements`
+- [x] Functional + non-functional requirements mapped to stories and later implementation — FR-01…FR-40, NFR-01…NFR-12, full traceability matrix (`docs/requirements/`)
+- [x] Commit, push, quality gate, mark COMPLETE
 
 ## Stage 6 — Prototype / Design System
 - [ ] Branch `stage/06-prototype`
@@ -187,4 +187,4 @@ Known limitation: no local Postgres/Docker in this environment — `migrate depl
 
 ## Next Exact Action
 
-Start Stage 5: create branch `stage/05-requirements`, produce `docs/requirements/` (functional + non-functional requirements mapped to the 44 stories and to later implementation).
+Start Stage 6: create branch `stage/06-prototype`, produce `docs/prototype/` (design tokens, typography, spacing, component inventory, screen mockups as Mermaid/HTML specs) and implement the design-system foundation in `frontend/` (Next.js scaffold, tokens, base shadcn components) so Stage 7 inherits it.
