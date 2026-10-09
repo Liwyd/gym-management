@@ -82,7 +82,7 @@ Architecture structured · work actually works · consistent with earlier stages
 ## Project Execution State
 
 ### Current Stage
-Stage 0 — COMPLETE. Next: Stage 1 (analysis artifacts).
+Stage 1 — COMPLETE. Next: Stage 2 (database).
 
 ### Stage 0 — Bootstrap — COMPLETE
 - [x] Audit repository (single commit containing only plan.md; no code)
@@ -92,14 +92,14 @@ Stage 0 — COMPLETE. Next: Stage 1 (analysis artifacts).
 - [x] Remove plan.md from git history (fresh root commit; object store rebuilt after aggressive gc corrupted loose objects on this PRoot filesystem — avoid `gc --aggressive --prune=now` here)
 - [x] Force-push clean history to origin/main (`be23ac7` → `460249d`, verified: no plan.md in any reachable object)
 
-## Stage 1 — Analysis
-- [ ] Branch `stage/01-analysis`
-- [ ] Analyze domain; define actors and core classes
-- [ ] Class diagram (entities, attributes, methods, relationships, cardinalities)
-- [ ] Sequence diagrams: member registration, login, membership activation, class enrollment, attendance, payment, trainer scheduling
-- [ ] Activity diagrams for key workflows
-- [ ] Validate diagrams against intended functionality (nothing fictional)
-- [ ] Commit, push, quality gate, mark COMPLETE
+## Stage 1 — Analysis — COMPLETE
+- [x] Branch `stage/01-analysis`
+- [x] Analyze domain; define actors and core classes (`docs/analysis/README.md` — actors, class inventory, normative rules R1–R9)
+- [x] Class diagram (entities, attributes, methods, relationships, cardinalities) (`docs/analysis/class-diagram.md`)
+- [x] Sequence diagrams: member registration, login, membership activation, class enrollment, attendance, payment, trainer scheduling (`docs/analysis/sequence/`)
+- [x] Activity diagrams for key workflows (`docs/analysis/activity/`)
+- [x] Validate diagrams against intended functionality (`docs/analysis/validation.md`)
+- [x] Commit, push, quality gate, mark COMPLETE
 
 ## Stage 2 — Database
 - [ ] Branch `stage/02-database`
@@ -183,4 +183,4 @@ Stage 0 — COMPLETE. Next: Stage 1 (analysis artifacts).
 
 ## Next Exact Action
 
-Start Stage 1: create branch `stage/01-analysis` and produce `docs/analysis/` (domain analysis, class diagram, sequence diagrams, activity diagrams).
+Start Stage 2: create branch `stage/02-database`, produce `docs/database/` ERD from the Stage 1 class diagram, implement `backend/prisma/` schema (constraints + justified indexes), migration, and realistic seed data.
