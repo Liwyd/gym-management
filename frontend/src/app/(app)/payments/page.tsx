@@ -84,10 +84,6 @@ export default function PaymentsPage() {
     canWrite ? "/members?limit=100" : null,
   );
 
-  const filtered = isMember
-    ? items
-    : items;
-
   async function recordPayment(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
@@ -189,7 +185,7 @@ export default function PaymentsPage() {
         <LoadingState label="Loading payments…" />
       ) : error ? (
         <ErrorState message={error.message} onRetry={refetch} />
-      ) : filtered.length === 0 ? (
+      ) : items.length === 0 ? (
         <EmptyState
           icon={<CreditCard className="size-5" />}
           title="No payments found"
@@ -211,7 +207,7 @@ export default function PaymentsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map((p) => (
+                {items.map((p) => (
                   <TableRow key={p.id}>
                     {!isMember ? (
                       <TableCell>
